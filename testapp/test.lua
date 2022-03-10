@@ -1,0 +1,1 @@
+weblua_add("/","test.html")
