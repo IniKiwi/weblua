@@ -7,6 +7,7 @@ set(
     src/main.cpp
     src/server.cpp
     src/lua_api/server.cpp
+    src/lua_api/util.cpp
 )
 
 set(

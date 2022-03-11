@@ -1,1 +1,1 @@
-weblua_add("/","test.html")
+weblua.add("/","test.html")
