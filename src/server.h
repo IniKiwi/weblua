@@ -6,6 +6,7 @@
 #include <string>
 #include <map>
 #include <unistd.h>
+#include "route.h"
 
 #include <luajit-2.1/lua.hpp>
 
@@ -28,7 +29,6 @@ class server{
     static void run_request(uint32_t _id);
 
     static std::map<uint32_t,client_t> clients;
-    static std::map<std::string,std::string> URLs;
 
     public:
 
