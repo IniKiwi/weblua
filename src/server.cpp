@@ -83,7 +83,7 @@ int server::init_lua(){
     server::server_lua_state = luaL_newstate();
     luaL_openlibs(server::server_lua_state);
     register_c_function(server::server_lua_state,"weblua","add",l_add);
-    int restlt2 = luaL_loadfile(server::server_lua_state, "/home/pierre/c-cpp-dev/weblua/testapp/test.lua");
+    int restlt2 = luaL_loadfile(server::server_lua_state, "test.lua");
     if(restlt2 != LUA_OK){
         std::cout << "lua loadfile error:\n";
 
