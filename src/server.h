@@ -29,7 +29,7 @@ class server{
     public:
 
     static int init(unsigned short port);
-    static int init_lua();
+    static int init_lua(std::string path);
     static int run_lua();
     static int main_loop();
 
