@@ -1,5 +1,5 @@
-local function callback()
-    print("callback");
+local function callback(request_id)
+    weblua.log(request_id,"callback")
 end
 
 weblua.add("/","test.html")

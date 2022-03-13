@@ -26,7 +26,7 @@ class route{
     static route* get(std::string _path);
     static bool exists(std::string _path);
 
-    void callback(lua_State* state);
+    void callback(lua_State* state, uint32_t _id);
     void detect_mimetype();
 
     void set_type(route_type _type);

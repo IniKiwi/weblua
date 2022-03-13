@@ -7,11 +7,9 @@
 #include <algorithm>
 #include <vector>
 #include <fstream>
+#include <request.h>
 
-uint32_t server::requests = 0;
-client_t server::client_tmp;
 lua_State* server::server_lua_state;
-std::map<uint32_t,client_t> server::clients;
 sockaddr_in server::server_addr;
 int server::server_sock;
 
@@ -19,6 +17,7 @@ int server::init(unsigned short port){
     server::server_addr.sin_family = AF_INET; 
     server::server_addr.sin_addr.s_addr = htonl(INADDR_ANY); 
     server::server_addr.sin_port = htons(port); 
+    request::rest_request_counter();
 
     server::server_sock = socket(AF_INET, SOCK_STREAM, 0);
     if(bind(server::server_sock,(struct sockaddr *)&server::server_addr,sizeof(server::server_addr)) < 0) { 
@@ -28,54 +27,20 @@ int server::init(unsigned short port){
     return 0;
 }
 
-void server::run_request(uint32_t _id){
-    char buffer[50000] = {0}; 
-    read(server::clients.at(_id).sock, buffer, 50000);
-    std::string buff = buffer;
-
-    std::vector<std::string> words;
-    std::istringstream stream(buff);
-    std::copy(
-        std::istream_iterator<std::string>( stream ),
-        std::istream_iterator<std::string>(),
-        std::back_inserter( words )
-    );
-
-    std::cout << words[0] << " " << words[1] << " " << words[2] << " -> ";
-
-    if(route::exists(words[1]) == false){
-        std::cout << "404\n";
-        std::string buf = "HTTP/1.1 404 Not Found\nContent-Type: text/plain\nContent-Length: 4\n\n404!";
-        write(server::clients.at(_id).sock, buf.c_str(), buf.length());
-    } else {
-        std::ifstream file;
-        std::streampos fb, fe;
-
-        file.open(route::get(words[1])->get_file(), std::ios::binary);
-        file.seekg(0, std::ios::end);
-        int file_size = file.tellg();
-        file.seekg(0, std::ios::beg);
-
-        std::string buf = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: "+std::to_string(file_size)+"\n\n" + std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-        std::cout << "200\n";
-        if(route::get(words[1])->get_type() == route_type::PATH_CALLBACK){
-            route::get(words[1])->callback(server::server_lua_state);
-        }
-        write(server::clients.at(_id).sock, buf.c_str(), buf.length());
-        
-    }
-    close(server::clients.at(_id).sock);
+void server::run_request(client_t _client){
+    request* rq = new request(server::server_lua_state, _client);
+    rq->send();
+    delete rq;
 }
 
 int server::main_loop(){
     listen(server_sock, 20);
+    client_t client_tmp;
     while(1){
-        if((server::client_tmp.sock = accept(server::server_sock, (sockaddr*)&server::client_tmp.addr, (socklen_t*)&server::client_tmp.len))<0){
+        if((client_tmp.sock = accept(server::server_sock, (sockaddr*)&client_tmp.addr, (socklen_t*)&client_tmp.len))<0){
             std::cerr << "accept failed!\n";
         }
-        server::clients.insert(std::pair<uint32_t,client_t>(server::requests, server::client_tmp));
-        new std::thread(&server::run_request,server::requests);
-        server::requests++;
+        new std::thread(&server::run_request,client_tmp);
     }
 }
 
@@ -83,6 +48,7 @@ int server::init_lua(){
     server::server_lua_state = luaL_newstate();
     luaL_openlibs(server::server_lua_state);
     register_c_function(server::server_lua_state,"weblua","add",l_add);
+    register_c_function(server::server_lua_state,"weblua","log",l_log);
     int restlt2 = luaL_loadfile(server::server_lua_state, "test.lua");
     if(restlt2 != LUA_OK){
         std::cout << "lua loadfile error:\n";

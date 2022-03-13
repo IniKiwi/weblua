@@ -22,9 +22,10 @@ bool route::exists(std::string _path){
     return true;
 }
 
-void route::callback(lua_State* state){
+void route::callback(lua_State* state, uint32_t _id){
     lua_rawgeti(state, LUA_REGISTRYINDEX, r_callback);
-    lua_call(state, 0, 0);
+    lua_pushnumber(state,_id);
+    lua_call(state, 1, 0);
 }
 
 void route::set_file(std::string _file){

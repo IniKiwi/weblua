@@ -22,13 +22,9 @@ class server{
     private:
     static sockaddr_in server_addr;
     static int server_sock;
-    static client_t client_tmp;
-    static uint32_t requests;
     static lua_State *server_lua_state;
 
-    static void run_request(uint32_t _id);
-
-    static std::map<uint32_t,client_t> clients;
+    static void run_request(client_t _client);
 
     public:
 

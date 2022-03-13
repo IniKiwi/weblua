@@ -4,7 +4,4 @@
 
 int l_add(lua_State* state);
 
-const luaL_Reg webluafuncs[] = {
-    {"add",l_add},
-    {NULL,NULL}
-};
+int l_log(lua_State* state);

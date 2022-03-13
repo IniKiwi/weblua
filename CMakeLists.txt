@@ -9,6 +9,7 @@ set(
     src/lua_api/server.cpp
     src/lua_api/util.cpp
     src/route.cpp
+    src/request.cpp
 )
 
 set(
