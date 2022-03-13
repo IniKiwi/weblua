@@ -23,3 +23,5 @@ include_directories(src)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(weblua PRIVATE Threads::Threads luajit-5.1)
+
+install(TARGETS weblua DESTINATION bin)

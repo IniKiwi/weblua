@@ -49,6 +49,10 @@ int server::init_lua(std::string path){
     luaL_openlibs(server::server_lua_state);
     register_c_function(server::server_lua_state,"weblua","add",l_add);
     register_c_function(server::server_lua_state,"weblua","log",l_log);
+    register_c_function(server::server_lua_state,"weblua","get_ip",l_get_ip);
+    register_c_function(server::server_lua_state,"weblua","set_mimetype",l_set_mimetype);
+    register_c_function(server::server_lua_state,"weblua","set_status",l_set_status);
+    register_c_function(server::server_lua_state,"weblua","set_data",l_set_data);
     int restlt2 = luaL_loadfile(server::server_lua_state, path.c_str());
     if(restlt2 != LUA_OK){
         std::cout << "lua loadfile error:\n";

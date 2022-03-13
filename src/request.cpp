@@ -26,6 +26,7 @@ request::request(lua_State* state, client_t _client){
         std::back_inserter( words )
     );
     path = words[1];
+    type = words[0];
     if(route::exists(path) == true){
         route_type type = route::get(path)->get_type();
         if(type == route_type::PATH || type == route_type::PATH_CALLBACK){
@@ -72,4 +73,32 @@ void request::rest_request_counter(){
 
 void request::callback(lua_State* state){
     route::get(path)->callback(state, id);
+}
+
+void request::set_data(std::string _data){
+    data = _data;
+}
+
+void request::set_mimetype(std::string _mimetype){
+    mimetype = _mimetype;
+}
+
+void request::set_status(std::string _status){
+    status = _status;
+}
+
+std::string request::get_data(){
+    return data;
+}
+std::string request::get_mimetype(){
+    return mimetype;
+}
+std::string request::get_status(){
+    return status;
+}
+client_t request::get_client(){
+    return client;
+}
+std::string request::get_type(){
+    return type;
 }

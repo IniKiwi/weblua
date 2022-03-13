@@ -17,6 +17,7 @@ class request{
     std::string path;
     std::string data;
     std::string status;
+    std::string type;
     std::string client_request;
     client_t client;
     uint32_t id;
@@ -34,6 +35,18 @@ class request{
     void callback(lua_State* state);
 
     void send();
+
+    void set_data(std::string _data);
+    void set_mimetype(std::string _mimetype);
+    void set_status(std::string _status);
+
+    std::string get_data();
+    std::string get_type();
+    std::string get_mimetype();
+    std::string get_status();
+    client_t get_client();
+
+    
 
 
 };
