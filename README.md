@@ -40,6 +40,14 @@ weblua.add("/get_ip/",function (request_id)
     weblua.set_data(request_id, ip)
 
 end)
+
+weblua.add("/png/",function (request_id)
+    --load png file
+    weblua.set_data_file(request_id,"test.png")
+    --set reponce mimetype
+    weblua.set_mimetype(request_id, "image/x-png")
+    weblua.set_status(request_id, "200 OK")
+end)
 ```
 ### functions
 
@@ -77,3 +85,9 @@ set the http response data
 ```lua
 weblua.set_data(request_id,"<h1>hello!</h1>")
 ```
+
+#### weblua.set_data_file()
+load and read file
+```lua
+weblua.set_data_file(request_id,"image.png") --needs weblua.set_mimetype(request_id, "image/x-png")
+``` 

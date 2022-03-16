@@ -13,3 +13,5 @@ int l_set_mimetype(lua_State* state);
 int l_set_data(lua_State* state);
 
 int l_set_status(lua_State* state);
+
+int l_set_data_file(lua_State* state);

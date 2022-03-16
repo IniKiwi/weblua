@@ -25,3 +25,4 @@ find_package(Threads REQUIRED)
 target_link_libraries(weblua PRIVATE Threads::Threads luajit-5.1)
 
 install(TARGETS weblua DESTINATION bin)
+set(CMAKE_BUILD_TYPE Debug)

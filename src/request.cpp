@@ -2,6 +2,8 @@
 #include <fstream>
 #include <iterator>
 #include <sstream>
+#include <vector>
+#include <cstring>
 
 
 std::map<uint32_t,request*> request::requests;
@@ -30,15 +32,13 @@ request::request(lua_State* state, client_t _client){
     if(route::exists(path) == true){
         route_type type = route::get(path)->get_type();
         if(type == route_type::PATH || type == route_type::PATH_CALLBACK){
-            std::ifstream file;
-            file.open(route::get(path)->get_file(), std::ios::binary);
-            data = std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+            set_data_file(route::get(path)->get_file());
             mimetype = "text/html";
             status = "200 OK";
         }
     }
     else{
-        data = "404!";
+        set_data("404!");
         mimetype = "text/plain";
         status = "404 Not Found";
     }
@@ -52,10 +52,13 @@ request::request(lua_State* state, client_t _client){
 }
 
 void request::send(){
-    std::string ret = "HTTP/1.1 " + status + "\n"+
+    std::string header = "HTTP/1.1 " + status + "\n"+
     "Content-Type: "+mimetype+"\n"+
-    "Content-Length: "+std::to_string(data.length())+"\n\n"+data;
-    write(client.sock,ret.c_str(),ret.length());
+    "Content-Length: "+std::to_string(data_size)+"\n\n";
+    char buffer[header.length()+data_size+1] = {0};
+    memcpy(&buffer[0], header.c_str(), header.length());
+    memcpy(&buffer[header.length()], &data[0], data_size);
+    write(client.sock,&buffer,sizeof(buffer));
     close(client.sock);
 }
 
@@ -76,7 +79,10 @@ void request::callback(lua_State* state){
 }
 
 void request::set_data(std::string _data){
-    data = _data;
+    data.clear();
+    data_size = _data.length();
+    data.resize(data_size);
+    memcpy(&data[0],_data.c_str(),_data.length());
 }
 
 void request::set_mimetype(std::string _mimetype){
@@ -88,7 +94,7 @@ void request::set_status(std::string _status){
 }
 
 std::string request::get_data(){
-    return data;
+    return reinterpret_cast<char*>(data.data());
 }
 std::string request::get_mimetype(){
     return mimetype;
@@ -101,4 +107,21 @@ client_t request::get_client(){
 }
 std::string request::get_type(){
     return type;
+}
+
+int request::set_data_file(std::string filename){
+    std::ifstream tfile;
+    tfile.open(filename, std::ios::binary);
+    if(tfile.is_open()){
+        tfile.seekg(0, std::ios::end);
+        data_size = tfile.tellg();
+        tfile.seekg(0, std::ios::beg);
+
+        data.clear();
+        data.resize(data_size);
+
+        tfile.read(reinterpret_cast<char*>(&data[0]), data_size);
+        return 0;
+    }
+    return 1;
 }

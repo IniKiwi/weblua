@@ -15,7 +15,8 @@ class request{
     private:
     std::string mimetype;
     std::string path;
-    std::string data;
+    std::vector<uint8_t> data;
+    size_t data_size;
     std::string status;
     std::string type;
     std::string client_request;
@@ -37,6 +38,7 @@ class request{
     void send();
 
     void set_data(std::string _data);
+    int set_data_file(std::string filename);
     void set_mimetype(std::string _mimetype);
     void set_status(std::string _status);
 
