@@ -18,7 +18,7 @@ end)
 
 weblua.add("/png/",function (request_id)
     --load png file
-    weblua.set_data_file(request_id,"test.png")
+    weblua.load_file(request_id,"test.png")
     --set reponce mimetype
     weblua.set_mimetype(request_id, "image/x-png")
     weblua.set_status(request_id, "200 OK")

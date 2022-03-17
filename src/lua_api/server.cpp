@@ -29,7 +29,7 @@ int l_add(lua_State* state){
 int l_log(lua_State* state){
     int args = lua_gettop(state);
     if(args == 2){
-        std::cout << std::to_string(lua_tointeger(state,1)) << "> " << lua_tostring(state,2) << "\n";
+        request::get(lua_tointeger(state,1))->log(lua_tostring(state,2));
     }
     return 0;
 }
@@ -58,6 +58,7 @@ int l_set_data(lua_State* state){
     int args = lua_gettop(state);
     if(args == 2){
         request::get(lua_tointeger(state,1))->set_data(lua_tostring(state,2));
+        request::get(lua_tointeger(state,1))->set_use_static_file(false);
     }
     return 0;
 }
@@ -82,4 +83,13 @@ int l_set_data_file(lua_State* state){
     }
     lua_pushnil(state);
     return 1;
+}
+
+int l_load_file(lua_State* state){
+    int args = lua_gettop(state);
+    if(args == 2){
+        request::get(lua_tointeger(state,1))->set_static_file(lua_tostring(state,2));
+        request::get(lua_tointeger(state,1))->set_use_static_file(true);
+    }
+    return 0;
 }

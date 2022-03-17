@@ -22,8 +22,7 @@ weblua [lua script]
 use `ctrl + c` to stop the program
 ## the weblua lua api
 ### demo script
-```lua
-local function callback(request_id)
+```lualocal function callback(request_id)
     weblua.log(request_id,"callback")
 end
 
@@ -43,7 +42,7 @@ end)
 
 weblua.add("/png/",function (request_id)
     --load png file
-    weblua.set_data_file(request_id,"test.png")
+    weblua.load_file(request_id,"test.png")
     --set reponce mimetype
     weblua.set_mimetype(request_id, "image/x-png")
     weblua.set_status(request_id, "200 OK")
@@ -87,7 +86,15 @@ weblua.set_data(request_id,"<h1>hello!</h1>")
 ```
 
 #### weblua.set_data_file()
-load and read file
+load file data in editable memory\
+enable editable memory!
+> :warning: **only for <500Ko files** 
 ```lua
 weblua.set_data_file(request_id,"image.png") --needs weblua.set_mimetype(request_id, "image/x-png")
+``` 
+#### weblua.load_file()
+save file name in variable\
+the file will be sent at the end of request with chunked transfer
+```lua
+weblua.load_file(request_id,"schoolfiles.zip") --needs weblua.set_mimetype(request_id, "application/zip")
 ``` 

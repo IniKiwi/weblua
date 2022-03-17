@@ -8,12 +8,14 @@
 #include <vector>
 #include <fstream>
 #include <request.h>
+#include <csignal>
 
 lua_State* server::server_lua_state;
 sockaddr_in server::server_addr;
 int server::server_sock;
 
 int server::init(unsigned short port){
+    signal(SIGPIPE, SIG_IGN);
     server::server_addr.sin_family = AF_INET; 
     server::server_addr.sin_addr.s_addr = htonl(INADDR_ANY); 
     server::server_addr.sin_port = htons(port); 
@@ -54,6 +56,7 @@ int server::init_lua(std::string path){
     register_c_function(server::server_lua_state,"weblua","set_status",l_set_status);
     register_c_function(server::server_lua_state,"weblua","set_data",l_set_data);
     register_c_function(server::server_lua_state,"weblua","set_data_file",l_set_data_file);
+    register_c_function(server::server_lua_state,"weblua","load_file",l_load_file);
     int restlt2 = luaL_loadfile(server::server_lua_state, path.c_str());
     if(restlt2 != LUA_OK){
         std::cout << "lua loadfile error:\n";
