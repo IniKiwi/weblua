@@ -6,6 +6,7 @@
 #include <sstream>
 #include <algorithm>
 #include <vector>
+#include <chrono>
 #include <fstream>
 #include <request.h>
 #include <csignal>
@@ -57,6 +58,8 @@ int server::init_lua(std::string path){
     register_c_function(server::server_lua_state,"weblua","set_data",l_set_data);
     register_c_function(server::server_lua_state,"weblua","set_data_file",l_set_data_file);
     register_c_function(server::server_lua_state,"weblua","load_file",l_load_file);
+    register_c_function(server::server_lua_state,"weblua","isPOST",l_isPOST);
+    register_c_function(server::server_lua_state,"weblua","get_form_feild",l_get_form_feild);
     int restlt2 = luaL_loadfile(server::server_lua_state, path.c_str());
     if(restlt2 != LUA_OK){
         std::cout << "lua loadfile error:\n";

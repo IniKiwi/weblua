@@ -17,3 +17,7 @@ int l_set_status(lua_State* state);
 int l_set_data_file(lua_State* state);
 
 int l_load_file(lua_State* state);
+
+int l_isPOST(lua_State* state);
+
+int l_get_form_feild(lua_State* state);

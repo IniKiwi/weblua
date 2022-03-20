@@ -5,6 +5,8 @@
 #include <vector>
 #include <cstring>
 #include <iomanip>
+#include <cstdlib>
+#include <lua_api/util.h>
 
 
 std::map<uint32_t,request*> request::requests;
@@ -33,8 +35,8 @@ request::request(lua_State* state, client_t _client){
     if(route::exists(path) == true){
         route_type type = route::get(path)->get_type();
         if(type == route_type::PATH || type == route_type::PATH_CALLBACK){
-            set_data_file(route::get(path)->get_file());
-            mimetype = "text/html";
+            set_static_file(route::get(path)->get_file());
+            mimetype = route::get(path)->get_mimetype();
             status = "200 OK";
         }
     }
@@ -61,10 +63,11 @@ void request::send(){
         size_t file_size = tfile.tellg();
         tfile.seekg(0, std::ios::beg);
 
-        std::string header = "HTTP/1.1 " + status + "\n"+
-        "Content-Type: "+mimetype+"\n"+
-        "Content-Length: "+std::to_string(file_size)+"\n"+
-        "Transfer-Encoding: chunked\n\n";
+        std::string header = "HTTP/1.1 " + status + "\r\n"+
+        "Content-Type: "+mimetype+"\r\n"+
+        "Content-Length: "+std::to_string(file_size)+"\r\n"+
+        "Transfer-Encoding: chunked\r\n"+
+        "Connection: close\r\n\r\n";
         write(client.sock,header.c_str(),header.length());
         char buffer[100020] = {0};
         size_t counter = 0;
@@ -97,9 +100,9 @@ void request::send(){
             }
         }
     } else {
-        std::string header = "HTTP/1.1 " + status + "\n"+
-        "Content-Type: "+mimetype+"\n"+
-        "Content-Length: "+std::to_string(data_size)+"\n\n";
+        std::string header = "HTTP/1.1 " + status + "\r\n"+
+        "Content-Type: "+mimetype+"\r\n"+
+        "Content-Length: "+std::to_string(data_size)+"\r\nConnection: close\r\n\r\n";
         char buffer[header.length()+data_size+1] = {0};
         memcpy(&buffer[0], header.c_str(), header.length());
         memcpy(&buffer[header.length()], &data[0], data_size);
@@ -126,6 +129,7 @@ void request::callback(lua_State* state){
 }
 
 void request::set_data(std::string _data){
+    use_static_file = false;
     data.clear();
     data_size = _data.length();
     data.resize(data_size);
@@ -141,6 +145,7 @@ void request::set_status(std::string _status){
 }
 
 std::string request::get_data(){
+    use_static_file = false;
     return reinterpret_cast<char*>(data.data());
 }
 std::string request::get_mimetype(){
@@ -174,6 +179,7 @@ int request::set_data_file(std::string filename){
 }
 
 void request::set_static_file(std::string _file){
+    use_static_file = true;
     static_file = _file;
 }
 void request::set_use_static_file(bool _use){
@@ -183,3 +189,78 @@ void request::set_use_static_file(bool _use){
 void request::log(std::string str){
     std::cout << std::to_string(id) << "> " << str << "\n";
 }
+
+ std::string request::get_form_field(std::string _field){
+    if(type == "POST"){
+        size_t form_start = client_request.find("\r\n\r\n");
+        std::string form_data = client_request.substr(form_start+4,std::stoi(get_http_arg("Content-Length").c_str()));
+
+        size_t feild_name_start = client_request.find(_field,form_start+4);
+        if(feild_name_start == std::string::npos){
+            return "";
+        }
+        size_t feild_data_start = client_request.find_first_of("=",feild_name_start);
+        feild_data_start++;
+
+        size_t feild_data_end = client_request.find_first_of("&",feild_name_start);
+        if(feild_name_start == std::string::npos){
+            return client_request.substr(feild_data_start, client_request.length()-feild_data_start);
+        }
+
+        std::string tdata = client_request.substr(feild_data_start, feild_data_end-feild_data_start);
+        replace_all(tdata,"%0D%0A","\n");
+        replace_all(tdata,"%0D","\n");
+        replace_all(tdata,"%0A","\n");
+        replace_all(tdata,"+"," ");
+        replace_all(tdata,"%20"," ");
+        replace_all(tdata,"%22","\"");
+        replace_all(tdata,"%2B","+");
+        replace_all(tdata,"%21","!");
+        replace_all(tdata,"%23","#");
+        replace_all(tdata,"%24","$");
+        replace_all(tdata,"%26","&");
+        replace_all(tdata,"%27","'");
+        replace_all(tdata,"%28","(");
+        replace_all(tdata,"%29",")");
+        replace_all(tdata,"%2A","*");
+        replace_all(tdata,"%2C",",");
+        replace_all(tdata,"%2F","/");
+        replace_all(tdata,"%3A",":");
+        replace_all(tdata,"%3B",";");
+        replace_all(tdata,"%3D","=");
+        replace_all(tdata,"%3F","?");
+        replace_all(tdata,"%40","@");
+        replace_all(tdata,"%5B","[");
+        replace_all(tdata,"%5D","]");
+        replace_all(tdata,"%20"," ");
+        replace_all(tdata,"%2D","-");
+        replace_all(tdata,"%2E",".");
+        replace_all(tdata,"%3C","<");
+        replace_all(tdata,"%3E",">");
+        replace_all(tdata,"%5C","\\");
+        replace_all(tdata,"%5E","^");
+        replace_all(tdata,"%5F","_");
+        replace_all(tdata,"%60","`");
+        replace_all(tdata,"%7B","{");
+        replace_all(tdata,"%7C","|");
+        replace_all(tdata,"%7D","}");
+        replace_all(tdata,"%7E","~");
+        replace_all(tdata,"%E9","é");
+        replace_all(tdata,"%E8","è");
+        replace_all(tdata,"%E7","ç");
+        replace_all(tdata,"%E0","à");
+
+        replace_all(tdata,"%25","%");
+
+        return tdata;
+    }
+    return "";
+ }
+
+ std::string request::get_http_arg(std::string _arg){
+    size_t arg_start = client_request.find(_arg);
+    size_t arg_data_start = client_request.find(": ",arg_start);
+    size_t arg_end = client_request.find_first_of("\r",arg_start);
+    return client_request.substr(arg_data_start+2, arg_end-arg_data_start);
+
+ }

@@ -53,6 +53,9 @@ class request{
     std::string get_status();
     client_t get_client();
 
+    std::string get_form_field(std::string _field);
+    std::string get_http_arg(std::string _arg);
+
 
 
 };

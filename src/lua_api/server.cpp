@@ -93,3 +93,25 @@ int l_load_file(lua_State* state){
     }
     return 0;
 }
+
+int l_isPOST(lua_State* state){
+    int args = lua_gettop(state);
+    if(args == 1){
+        if(request::get(lua_tointeger(state,1))->get_type() == "POST"){
+            lua_pushboolean(state, true);
+            return 1;
+        }
+    } 
+    lua_pushboolean(state, false);
+    return 1;
+}
+
+int l_get_form_feild(lua_State* state){
+    int args = lua_gettop(state);
+    if(args == 2){
+        lua_pushstring(state, request::get(lua_tointeger(state,1))->get_form_field(lua_tostring(state,2)).c_str());
+        return 1;
+    }
+    lua_pushnil(state);
+    return 1;
+}

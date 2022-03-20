@@ -17,18 +17,14 @@ sudo make install
 ```
 ## run
 ```bash
-weblua [lua script]
+sudo weblua [lua script]
 ```
-use `ctrl + c` to stop the program
+use `ctrl + c` to stop the program \
+`sudo` is needed to run the program (port 80)
 ## the weblua lua api
 ### demo script
-```lualocal function callback(request_id)
-    weblua.log(request_id,"callback")
-end
-
-weblua.add("/","test.html")
-weblua.add("/callback/","test.html", callback)
-weblua.add("/get_ip/",function (request_id)
+```lua
+local function get_ip(request_id)
     --get client ip
     local ip = weblua.get_ip(request_id)
     weblua.log(request_id, "user ip: "..ip)
@@ -37,15 +33,16 @@ weblua.add("/get_ip/",function (request_id)
     weblua.set_mimetype(request_id, "text/plain")
     weblua.set_status(request_id, "200 OK")
     weblua.set_data(request_id, ip)
+end
+weblua.add("/get_ip",get_ip)
 
-end)
+weblua.add("/test.png","test.png")
 
-weblua.add("/png/",function (request_id)
-    --load png file
-    weblua.load_file(request_id,"test.png")
-    --set reponce mimetype
-    weblua.set_mimetype(request_id, "image/x-png")
-    weblua.set_status(request_id, "200 OK")
+weblua.add("/","test.html",function (request_id)
+    if weblua.isPOST(request_id) then
+        weblua.log(request_id, "username: "..weblua.get_form_feild(request_id,"username"))
+        weblua.log(request_id, "message: "..weblua.get_form_feild(request_id,"message"))
+    end
 end)
 ```
 ### functions
@@ -90,11 +87,24 @@ load file data in editable memory\
 enable editable memory!
 > :warning: **only for <500Ko files** 
 ```lua
-weblua.set_data_file(request_id,"image.png") --needs weblua.set_mimetype(request_id, "image/x-png")
+weblua.set_data_file(request_id,"image.png")
 ``` 
 #### weblua.load_file()
 save file name in variable\
 the file will be sent at the end of request with chunked transfer
 ```lua
-weblua.load_file(request_id,"schoolfiles.zip") --needs weblua.set_mimetype(request_id, "application/zip")
+weblua.load_file(request_id,"schoolfiles.zip") 
 ``` 
+#### weblua.isPOST()
+returns true if the request is a POST
+```lua
+if weblua.isPOST(request_id) then
+    --code
+end
+```
+#### weblua.get_form_feild()
+returns the form feild data
+> :warning: **only for POST requests** use `weblua.isPOST()` to check
+```lua
+local value = weblua.get_form_feild(request_id, "feild_name")
+```

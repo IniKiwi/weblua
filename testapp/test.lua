@@ -1,10 +1,4 @@
-local function callback(request_id)
-    weblua.log(request_id,"callback")
-end
-
-weblua.add("/","test.html")
-weblua.add("/callback/","test.html", callback)
-weblua.add("/get_ip/",function (request_id)
+local function get_ip(request_id)
     --get client ip
     local ip = weblua.get_ip(request_id)
     weblua.log(request_id, "user ip: "..ip)
@@ -13,13 +7,14 @@ weblua.add("/get_ip/",function (request_id)
     weblua.set_mimetype(request_id, "text/plain")
     weblua.set_status(request_id, "200 OK")
     weblua.set_data(request_id, ip)
+end
+weblua.add("/get_ip",get_ip)
 
-end)
+weblua.add("/test.png","test.png")
 
-weblua.add("/png/",function (request_id)
-    --load png file
-    weblua.load_file(request_id,"test.png")
-    --set reponce mimetype
-    weblua.set_mimetype(request_id, "image/x-png")
-    weblua.set_status(request_id, "200 OK")
+weblua.add("/","test.html",function (request_id)
+    if weblua.isPOST(request_id) then
+        weblua.log(request_id, "username: "..weblua.get_form_feild(request_id,"username"))
+        weblua.log(request_id, "message: "..weblua.get_form_feild(request_id,"message"))
+    end
 end)
