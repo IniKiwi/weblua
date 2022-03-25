@@ -45,7 +45,7 @@ request::request(lua_State* state, client_t _client){
         mimetype = "text/plain";
         status = "404 Not Found";
     }
-    std::cout << "\e[39m" << std::to_string(id) << ": " << words[0] << " \e[93m" << path << " \e[39m" << status << "\e[90m\n";
+    std::cout << "\r\e[39m" << std::to_string(id) << ": " << words[0] << " \e[93m" << path << " \e[39m" << status << "\e[90m\n> ";
     if(route::exists(path) == true){
         route_type type = route::get(path)->get_type();
         if(type == route_type::CUSTOM || type == route_type::PATH_CALLBACK){
@@ -187,7 +187,7 @@ void request::set_use_static_file(bool _use){
 }
 
 void request::log(std::string str){
-    std::cout << std::to_string(id) << "> " << str << "\n";
+    std::cout << "\r" << std::to_string(id) << "> " << str << "\n> ";
 }
 
  std::string request::get_form_field(std::string _field){

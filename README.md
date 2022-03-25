@@ -4,7 +4,7 @@ a C++ http server with lua
 ## installation on debian based
 #### Step 1: Install dependencies
 ```bash
-sudo apt -y install build-essential cmake libpthread-stubs0-dev libluajit-5.1-dev
+sudo apt -y install build-essential cmake libpthread-stubs0-dev libluajit-5.1-dev libsqlite3-dev
 ```
 
 #### Step 2: build executable
@@ -24,6 +24,7 @@ use `ctrl + c` to stop the program \
 ## the weblua lua api
 ### demo script
 ```lua
+--get ip function
 local function get_ip(request_id)
     --get client ip
     local ip = weblua.get_ip(request_id)
@@ -36,12 +37,37 @@ local function get_ip(request_id)
 end
 weblua.add("/get_ip",get_ip)
 
+--png file
 weblua.add("/test.png","test.png")
 
+--html page, POST forms, storage set
 weblua.add("/","test.html",function (request_id)
     if weblua.isPOST(request_id) then
-        weblua.log(request_id, "username: "..weblua.get_form_feild(request_id,"username"))
-        weblua.log(request_id, "message: "..weblua.get_form_feild(request_id,"message"))
+        local username = weblua.get_form_feild(request_id,"username")
+        local message = weblua.get_form_feild(request_id,"message")
+        weblua.log(request_id, "username: "..username)
+        weblua.log(request_id, "message: "..message)
+        storage.set("messages."..username, message)
+    end
+end)
+
+--storage read
+weblua.add("/messages", function (request_id)
+    -- set the request type
+    weblua.set_mimetype(request_id, "text/plain")
+    weblua.set_status(request_id, "200 OK")
+
+    if weblua.isPOST(request_id) then
+        local username = weblua.get_form_feild(request_id,"username")
+        local message = storage.get("messages."..username) --the message is a string
+        if message ~= nil then
+            weblua.set_data(request_id, message)
+        else
+            weblua.set_data(request_id, "message not found!")
+        end
+        
+    else
+        weblua.set_data(request_id, "the page is only for POST requests")
     end
 end)
 ```
@@ -52,6 +78,32 @@ end)
 weblua.add("/path/","file") 
 weblua.add("/path/","file", callback_function)
 weblua.add("/path/", callback_function)
+```
+
+### storage functions
+the storage module use sqlite to store values
+#### storage.set()
+store a string or a number with a unique key
+```lua
+storage.set("key", "data")
+storage.set("key", 750)
+``` 
+#### storage.get()
+get a value with a unique key \
+returns 2 values:
+1. the data 
+2. the data type `STORAGE_STRING` or `STORAGE_NUMBER`
+```lua
+local data, data_type = storage.get("key")
+if data ~= nil then
+    if data_type == STORAGE_STRING then
+        --data is a string
+    else if data_type == STORAGE_NUMBER then
+        --data is a number
+    end
+else
+    --NULL
+end
 ```
 
 ### callback functions

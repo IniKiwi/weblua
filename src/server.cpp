@@ -1,6 +1,7 @@
 #include "server.h"
 #include "lua_api/util.h"
 #include <lua_api/server.h>
+#include <lua_api/l_storage.h>
 #include <iostream>
 #include <iterator>
 #include <sstream>
@@ -10,6 +11,7 @@
 #include <fstream>
 #include <request.h>
 #include <csignal>
+#include <sql.h>
 
 lua_State* server::server_lua_state;
 sockaddr_in server::server_addr;
@@ -21,6 +23,7 @@ int server::init(unsigned short port){
     server::server_addr.sin_addr.s_addr = htonl(INADDR_ANY); 
     server::server_addr.sin_port = htons(port); 
     request::rest_request_counter();
+    sql::init();
 
     server::server_sock = socket(AF_INET, SOCK_STREAM, 0);
     if(bind(server::server_sock,(struct sockaddr *)&server::server_addr,sizeof(server::server_addr)) < 0) { 
@@ -60,6 +63,12 @@ int server::init_lua(std::string path){
     register_c_function(server::server_lua_state,"weblua","load_file",l_load_file);
     register_c_function(server::server_lua_state,"weblua","isPOST",l_isPOST);
     register_c_function(server::server_lua_state,"weblua","get_form_feild",l_get_form_feild);
+    register_c_function(server::server_lua_state,"storage","set",l_set);
+    register_c_function(server::server_lua_state,"storage","get",l_get);
+    lua_pushnumber(server::server_lua_state, SQLITE_TEXT);
+    lua_setglobal(server::server_lua_state, "STORAGE_STRING");
+    lua_pushnumber(server::server_lua_state, SQLITE_FLOAT);
+    lua_setglobal(server::server_lua_state, "STORAGE_NUMBER");
     int restlt2 = luaL_loadfile(server::server_lua_state, path.c_str());
     if(restlt2 != LUA_OK){
         std::cout << "lua loadfile error:\n";

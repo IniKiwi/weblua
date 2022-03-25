@@ -1,4 +1,5 @@
 #include <luajit-2.1/lua.hpp>
+#include <string>
 
 #pragma once
 

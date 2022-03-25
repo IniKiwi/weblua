@@ -6,12 +6,23 @@
         <h1>weblua test page</h1>
         <hr>
         <p>
+            set user message
             <form method="post">
                 <label>user name <input type="text" name="username"></label><br>
                 <textarea name="message"></textarea><br>
                 <input type="submit">
             </form>
         </p>
+        <hr>
+        <p>
+            get user message
+            <form method="post" action="/messages">
+                <label>user name <input type="text" name="username"></label><br>
+                <input type="submit">
+            </form>
+        </p>
+        <hr>
         <p><img width="720" src="/test.png"></p>
+
     </body>
 </html>
