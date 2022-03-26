@@ -9,6 +9,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
+#define WEBLUA_CHUNKED_PACKET_SIZE 65536
 
 #pragma once
 class request{

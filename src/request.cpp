@@ -69,11 +69,11 @@ void request::send(){
         "Transfer-Encoding: chunked\r\n"+
         "Connection: close\r\n\r\n";
         write(client.sock,header.c_str(),header.length());
-        char buffer[100020] = {0};
+        char buffer[WEBLUA_CHUNKED_PACKET_SIZE + 20] = {0};
         size_t counter = 0;
 
         while(counter < file_size){
-            if(file_size - counter < 100000){
+            if(file_size - counter < WEBLUA_CHUNKED_PACKET_SIZE){
                 tfile.seekg(counter, std::ios::beg);
                 std::stringstream stream;
                 stream << std::hex << file_size-counter;
@@ -91,12 +91,16 @@ void request::send(){
                 std::string _log = "sending file..." + std::to_string(counter) + "/" + std::to_string(file_size);
                 log(_log);
                 tfile.seekg(counter, std::ios::beg);
-                memset(&buffer[0],0,100020);
-                memcpy(&buffer[0],"186A0\r\n",7);
-                tfile.read(&buffer[7],100000);
-                counter = counter+100000;
-                memcpy(&buffer[100007],"\r\n",2);
-                write(client.sock,buffer,100009);
+                memset(&buffer[0],0,WEBLUA_CHUNKED_PACKET_SIZE+20);
+                std::stringstream stream;
+                stream << std::hex << WEBLUA_CHUNKED_PACKET_SIZE;
+                std::string result( stream.str() );
+                result += "\r\n";
+                memcpy(&buffer[0],result.c_str(),result.length());
+                tfile.read(&buffer[7],WEBLUA_CHUNKED_PACKET_SIZE);
+                counter = counter+WEBLUA_CHUNKED_PACKET_SIZE;
+                memcpy(&buffer[WEBLUA_CHUNKED_PACKET_SIZE+7],"\r\n",2);
+                write(client.sock,buffer,WEBLUA_CHUNKED_PACKET_SIZE+9);
             }
         }
     } else {
