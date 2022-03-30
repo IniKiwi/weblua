@@ -14,6 +14,7 @@ uint32_t request::request_counter;
 
 request::request(lua_State* state, client_t _client){
     client = _client;
+    ended = false;
     request::requests.insert(std::pair<uint32_t,request*>(request::request_counter,this));
     id = request::request_counter;
     request::request_counter++;
@@ -52,6 +53,16 @@ request::request(lua_State* state, client_t _client){
             callback(state);
         }
     }
+
+    if(ended == false){
+        send();
+    }
+}
+
+void request::http_redirect(std::string _loc){
+    ended = true;
+    std::string header = "HTTP/1.1 301 Moved Permanently\r\nConnection: close\r\nLocation: "+_loc+"\r\n\r\n";
+    write(client.sock,header.c_str(),header.length());
 }
 
 void request::send(){
@@ -86,6 +97,7 @@ void request::send(){
                 memcpy(&buffer[streamsize+2+file_size-counter],"\r\n",2);
                 write(client.sock, buffer, streamsize+2+file_size-counter+2);
                 write(client.sock,"0\r\n\r\n",5);
+                ended = true;
                 break;
             } else {
                 std::string _log = "sending file..." + std::to_string(counter) + "/" + std::to_string(file_size);
@@ -101,6 +113,7 @@ void request::send(){
                 counter = counter+WEBLUA_CHUNKED_PACKET_SIZE;
                 memcpy(&buffer[WEBLUA_CHUNKED_PACKET_SIZE+7],"\r\n",2);
                 write(client.sock,buffer,WEBLUA_CHUNKED_PACKET_SIZE+9);
+                
             }
         }
     } else {
@@ -111,6 +124,7 @@ void request::send(){
         memcpy(&buffer[0], header.c_str(), header.length());
         memcpy(&buffer[header.length()], &data[0], data_size);
         write(client.sock,&buffer,sizeof(buffer));
+        ended = true;
         close(client.sock);
     }
     

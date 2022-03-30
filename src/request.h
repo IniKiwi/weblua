@@ -19,6 +19,7 @@ class request{
     std::vector<uint8_t> data;
     std::string static_file;
     bool use_static_file;
+    bool ended;
     size_t data_size;
     std::string status;
     std::string type;
@@ -39,6 +40,8 @@ class request{
     void callback(lua_State* state);
 
     void send();
+    void http_redirect(std::string _loc);
+
     void log(std::string str);
 
     void set_data(std::string _data);

@@ -53,13 +53,11 @@ end)
 
 --storage read
 weblua.add("/messages", function (request_id)
-    -- set the request type
     weblua.set_mimetype(request_id, "text/plain")
     weblua.set_status(request_id, "200 OK")
-
     if weblua.isPOST(request_id) then
         local username = weblua.get_form_feild(request_id,"username")
-        local message = storage.get("messages."..username) --the message is a string
+        local message = storage.get("messages."..username)
         if message ~= nil then
             weblua.set_data(request_id, message)
         else
@@ -68,42 +66,9 @@ weblua.add("/messages", function (request_id)
         
     else
         weblua.set_data(request_id, "the page is only for POST requests")
+        weblua.http_redirect(request_id,"/")
     end
 end)
-```
-### functions
-
-#### weblua.add()
-```lua
-weblua.add("/path/","file") 
-weblua.add("/path/","file", callback_function)
-weblua.add("/path/", callback_function)
-```
-
-### storage functions
-the storage module use sqlite to store values
-#### storage.set()
-store a string or a number with a unique key
-```lua
-storage.set("key", "data")
-storage.set("key", 750)
-``` 
-#### storage.get()
-get a value with a unique key \
-returns 2 values:
-1. the data 
-2. the data type `STORAGE_STRING` or `STORAGE_NUMBER`
-```lua
-local data, data_type = storage.get("key")
-if data ~= nil then
-    if data_type == STORAGE_STRING then
-        --data is a string
-    else if data_type == STORAGE_NUMBER then
-        --data is a number
-    end
-else
-    --NULL
-end
 ```
 
 ### callback functions
@@ -159,4 +124,11 @@ returns the form feild data
 > :warning: **only for POST requests** use `weblua.isPOST()` to check
 ```lua
 local value = weblua.get_form_feild(request_id, "feild_name")
+```
+
+#### weblua.http_redirect()
+returns 301 Moved Permanently to the navigator
+> :warning: **no other content can be sent to the internet browser** but the callback will continue its execution until the end
+```lua
+weblua.http_redirect(request_id, "/")
 ```

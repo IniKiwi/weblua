@@ -115,3 +115,11 @@ int l_get_form_feild(lua_State* state){
     lua_pushnil(state);
     return 1;
 }
+
+int l_http_redirect(lua_State* state){
+    int args = lua_gettop(state);
+    if(args == 2){
+        request::get(lua_tointeger(state,1))->http_redirect(lua_tostring(state,2));
+    }
+    return 0;
+}

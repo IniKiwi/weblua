@@ -35,7 +35,6 @@ int server::init(unsigned short port){
 
 void server::run_request(client_t _client){
     request* rq = new request(server::server_lua_state, _client);
-    rq->send();
     delete rq;
 }
 
@@ -63,6 +62,7 @@ int server::init_lua(std::string path){
     register_c_function(server::server_lua_state,"weblua","load_file",l_load_file);
     register_c_function(server::server_lua_state,"weblua","isPOST",l_isPOST);
     register_c_function(server::server_lua_state,"weblua","get_form_feild",l_get_form_feild);
+    register_c_function(server::server_lua_state,"weblua","http_redirect",l_http_redirect);
     register_c_function(server::server_lua_state,"storage","set",l_set);
     register_c_function(server::server_lua_state,"storage","get",l_get);
     lua_pushnumber(server::server_lua_state, SQLITE_TEXT);

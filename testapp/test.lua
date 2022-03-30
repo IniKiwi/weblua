@@ -40,5 +40,6 @@ weblua.add("/messages", function (request_id)
         
     else
         weblua.set_data(request_id, "the page is only for POST requests")
+        weblua.http_redirect(request_id,"/")
     end
 end)
