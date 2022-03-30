@@ -70,7 +70,40 @@ weblua.add("/messages", function (request_id)
     end
 end)
 ```
+### functions
 
+#### weblua.add()
+```lua
+weblua.add("/path/","file") 
+weblua.add("/path/","file", callback_function)
+weblua.add("/path/", callback_function)
+```
+
+### storage functions
+the storage module use sqlite to store values
+#### storage.set()
+store a string or a number with a unique key
+```lua
+storage.set("key", "data")
+storage.set("key", 750)
+``` 
+#### storage.get()
+get a value with a unique key \
+returns 2 values:
+1. the data 
+2. the data type `STORAGE_STRING` or `STORAGE_NUMBER`
+```lua
+local data, data_type = storage.get("key")
+if data ~= nil then
+    if data_type == STORAGE_STRING then
+        --data is a string
+    else if data_type == STORAGE_NUMBER then
+        --data is a number
+    end
+else
+    --NULL
+end
+```
 ### callback functions
 callback functions needs a `request_id`
 #### weblua.log()
