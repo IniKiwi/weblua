@@ -12,13 +12,17 @@
 #include <request.h>
 #include <csignal>
 #include <sql.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 lua_State* server::server_lua_state;
 sockaddr_in server::server_addr;
 int server::server_sock;
+char server::running;
 
-int server::init(unsigned short port){
+int server::init(unsigned short port, std::string path){
     signal(SIGPIPE, SIG_IGN);
+    server::running = 1;
     server::server_addr.sin_family = AF_INET; 
     server::server_addr.sin_addr.s_addr = htonl(INADDR_ANY); 
     server::server_addr.sin_port = htons(port); 
@@ -30,6 +34,11 @@ int server::init(unsigned short port){
         std::cerr << "bind failed!\nthe port "<<port<<" is free?\n";
         exit(EXIT_FAILURE); 
     }
+
+    init_lua(path);
+    new std::thread(main_loop);
+    server_cli();
+
     return 0;
 }
 
@@ -38,15 +47,42 @@ void server::run_request(client_t _client){
     delete rq;
 }
 
+void server::server_cli(){
+    while(1){
+        char * line = readline("\r> ");
+        if(!line) break;
+        if(*line) add_history(line);
+        std::string com = line;
+        if(com == "exit"){
+            running = false;
+            free(line);
+            break;
+        } else if (com == "help"){
+            server::log("exit: exit weblua and stop the server");
+        } else if(com == ""){
+
+        }
+        else {
+            server::log("\e[31mno command named "+com);
+        }
+        free(line);
+    }
+}
+
+void server::log(std::string _log){
+    std::cout << "\r\e[39m> " << _log << "\e[39m\r\n> ";
+}
+
 int server::main_loop(){
     listen(server_sock, 20);
     client_t client_tmp;
-    while(1){
+    while(server::running){
         if((client_tmp.sock = accept(server::server_sock, (sockaddr*)&client_tmp.addr, (socklen_t*)&client_tmp.len))<0){
             std::cerr << "accept failed!\n";
         }
         new std::thread(&server::run_request,client_tmp);
     }
+    close(server_sock);
 }
 
 int server::init_lua(std::string path){

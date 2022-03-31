@@ -25,7 +25,7 @@ include_directories(src)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 find_package (SQLite3)
-target_link_libraries(weblua PRIVATE Threads::Threads luajit-5.1 sqlite3)
+target_link_libraries(weblua PRIVATE Threads::Threads luajit-5.1 sqlite3 readline)
 
 install(TARGETS weblua DESTINATION bin)
 set(CMAKE_BUILD_TYPE Debug)

@@ -205,7 +205,7 @@ void request::set_use_static_file(bool _use){
 }
 
 void request::log(std::string str){
-    std::cout << "\r" << std::to_string(id) << "> " << str << "\n> ";
+    std::cout << "\e[90m\r\e[90m" << std::to_string(id) << "> " << str << "\e[39m\n> ";
 }
 
  std::string request::get_form_field(std::string _field){
