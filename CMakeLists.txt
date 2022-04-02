@@ -11,7 +11,7 @@ set(
     src/route.cpp
     src/request.cpp
     src/sql.cpp
-    src/lua_api/l_storage
+    src/lua_api/l_storage.cpp
 )
 
 set(

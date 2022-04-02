@@ -12,6 +12,7 @@
 #include <luajit-2.1/lua.hpp>
 
 #pragma once
+#define WEBLUA_MAX_CLIENTS 2048
 
 typedef struct{
     int sock;

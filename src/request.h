@@ -8,8 +8,10 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <mutex>
 
 #define WEBLUA_CHUNKED_PACKET_SIZE 65536
+#define WEBLUA_MAX_FILE_SIZE 1099511627776
 
 #pragma once
 class request{
@@ -28,6 +30,7 @@ class request{
     uint32_t id;
     static std::map<uint32_t,request*> requests;
     static uint32_t request_counter;
+    static std::mutex mutex;
 
     public:
     request(lua_State* state, client_t _client);

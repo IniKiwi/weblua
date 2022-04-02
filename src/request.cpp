@@ -11,18 +11,22 @@
 
 std::map<uint32_t,request*> request::requests;
 uint32_t request::request_counter;
+std::mutex request::mutex;
 
 request::request(lua_State* state, client_t _client){
     client = _client;
     ended = false;
+    request::mutex.lock();
     request::requests.insert(std::pair<uint32_t,request*>(request::request_counter,this));
     id = request::request_counter;
     request::request_counter++;
-
-    char buffer[50000] = {0}; 
+    char* buffer;
+    buffer = (char*)malloc(50000); 
     read(_client.sock, buffer, 50000);
+    request::mutex.unlock();
 
     client_request = buffer;
+    free(buffer);
 
     std::vector<std::string> words;
     std::istringstream stream(client_request);
@@ -50,13 +54,16 @@ request::request(lua_State* state, client_t _client){
     if(route::exists(path) == true){
         route_type type = route::get(path)->get_type();
         if(type == route_type::CUSTOM || type == route_type::PATH_CALLBACK){
+            request::mutex.lock();
             callback(state);
+            request::mutex.unlock();
         }
     }
 
     if(ended == false){
         send();
     }
+    
 }
 
 void request::http_redirect(std::string _loc){
@@ -74,13 +81,18 @@ void request::send(){
         size_t file_size = tfile.tellg();
         tfile.seekg(0, std::ios::beg);
 
+        if(file_size > WEBLUA_MAX_FILE_SIZE){
+            return;
+        }
+
         std::string header = "HTTP/1.1 " + status + "\r\n"+
         "Content-Type: "+mimetype+"\r\n"+
         "Content-Length: "+std::to_string(file_size)+"\r\n"+
         "Transfer-Encoding: chunked\r\n"+
         "Connection: close\r\n\r\n";
         write(client.sock,header.c_str(),header.length());
-        char buffer[WEBLUA_CHUNKED_PACKET_SIZE + 20] = {0};
+        char* buffer;
+        buffer = (char*) malloc(WEBLUA_CHUNKED_PACKET_SIZE + 20);
         size_t counter = 0;
 
         while(counter < file_size){
@@ -98,6 +110,9 @@ void request::send(){
                 write(client.sock, buffer, streamsize+2+file_size-counter+2);
                 write(client.sock,"0\r\n\r\n",5);
                 ended = true;
+                tfile.close();
+                free(buffer);
+                close(client.sock);
                 break;
             } else {
                 std::string _log = "sending file..." + std::to_string(counter) + "/" + std::to_string(file_size);
@@ -131,7 +146,11 @@ void request::send(){
 }
 
 request::~request(){
+    request::mutex.lock();
     request::requests.erase(id);
+    request::mutex.unlock();
+    client_request.clear();
+    
 }
 
 request* request::get(uint32_t _id){

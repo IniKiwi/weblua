@@ -55,6 +55,7 @@ void server::server_cli(){
         std::string com = line;
         if(com == "exit"){
             running = false;
+            close(server::server_sock);
             free(line);
             break;
         } else if (com == "help"){
@@ -74,13 +75,15 @@ void server::log(std::string _log){
 }
 
 int server::main_loop(){
-    listen(server_sock, 20);
+    listen(server_sock, WEBLUA_MAX_CLIENTS);
     client_t client_tmp;
     while(server::running){
         if((client_tmp.sock = accept(server::server_sock, (sockaddr*)&client_tmp.addr, (socklen_t*)&client_tmp.len))<0){
             std::cerr << "accept failed!\n";
+        } else {
+            new std::thread(&server::run_request,client_tmp);
         }
-        new std::thread(&server::run_request,client_tmp);
+        
     }
     close(server_sock);
 }
