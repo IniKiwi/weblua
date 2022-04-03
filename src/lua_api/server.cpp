@@ -71,20 +71,6 @@ int l_set_status(lua_State* state){
     return 0;
 }
 
-int l_set_data_file(lua_State* state){
-    int args = lua_gettop(state);
-    if(args == 2){
-        int r = request::get(lua_tointeger(state,1))->set_data_file(lua_tostring(state,2));
-        if(r==0){
-            lua_pushboolean(state,true);
-            return 1;
-        }
-        
-    }
-    lua_pushnil(state);
-    return 1;
-}
-
 int l_load_file(lua_State* state){
     int args = lua_gettop(state);
     if(args == 2){

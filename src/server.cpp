@@ -86,6 +86,7 @@ int server::main_loop(){
         
     }
     close(server_sock);
+    return 0;
 }
 
 int server::init_lua(std::string path){
@@ -97,7 +98,6 @@ int server::init_lua(std::string path){
     register_c_function(server::server_lua_state,"weblua","set_mimetype",l_set_mimetype);
     register_c_function(server::server_lua_state,"weblua","set_status",l_set_status);
     register_c_function(server::server_lua_state,"weblua","set_data",l_set_data);
-    register_c_function(server::server_lua_state,"weblua","set_data_file",l_set_data_file);
     register_c_function(server::server_lua_state,"weblua","load_file",l_load_file);
     register_c_function(server::server_lua_state,"weblua","isPOST",l_isPOST);
     register_c_function(server::server_lua_state,"weblua","get_form_feild",l_get_form_feild);

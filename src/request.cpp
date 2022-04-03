@@ -198,23 +198,6 @@ std::string request::get_type(){
     return type;
 }
 
-int request::set_data_file(std::string filename){
-    std::ifstream tfile;
-    tfile.open(filename, std::ios::binary);
-    if(tfile.is_open()){
-        tfile.seekg(0, std::ios::end);
-        data_size = tfile.tellg();
-        tfile.seekg(0, std::ios::beg);
-
-        data.clear();
-        data.resize(data_size);
-
-        tfile.read(reinterpret_cast<char*>(&data[0]), data_size);
-        return 0;
-    }
-    return 1;
-}
-
 void request::set_static_file(std::string _file){
     use_static_file = true;
     static_file = _file;

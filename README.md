@@ -132,13 +132,6 @@ set the http response data
 weblua.set_data(request_id,"<h1>hello!</h1>")
 ```
 
-#### weblua.set_data_file()
-load file data in editable memory\
-enable editable memory!
-> :warning: **only for <500Ko files** 
-```lua
-weblua.set_data_file(request_id,"image.png")
-``` 
 #### weblua.load_file()
 save file name in variable\
 the file will be sent at the end of request with chunked transfer
