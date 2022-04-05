@@ -102,6 +102,7 @@ int server::init_lua(std::string path){
     register_c_function(server::server_lua_state,"weblua","isPOST",l_isPOST);
     register_c_function(server::server_lua_state,"weblua","get_form_feild",l_get_form_feild);
     register_c_function(server::server_lua_state,"weblua","http_redirect",l_http_redirect);
+    register_c_function(server::server_lua_state,"weblua","render",l_render);
     register_c_function(server::server_lua_state,"storage","set",l_set);
     register_c_function(server::server_lua_state,"storage","get",l_get);
     lua_pushnumber(server::server_lua_state, SQLITE_TEXT);

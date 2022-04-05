@@ -27,19 +27,17 @@ end)
 
 --storage read
 weblua.add("/messages", function (request_id)
-    weblua.set_mimetype(request_id, "text/plain")
-    weblua.set_status(request_id, "200 OK")
+    weblua.set_mimetype(request_id, "text/html")
     if weblua.isPOST(request_id) then
         local username = weblua.get_form_feild(request_id,"username")
         local message = storage.get("messages."..username)
         if message ~= nil then
-            weblua.set_data(request_id, message)
+            weblua.render(request_id,"message.html", {username=username, message=message})
         else
-            weblua.set_data(request_id, "message not found!")
+            weblua.http_redirect(request_id,"/")
         end
         
     else
-        weblua.set_data(request_id, "the page is only for POST requests")
         weblua.http_redirect(request_id,"/")
     end
 end)

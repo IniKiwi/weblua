@@ -24,3 +24,5 @@ int l_isPOST(lua_State* state);
 int l_get_form_feild(lua_State* state);
 
 int l_http_redirect(lua_State* state);
+
+int l_render(lua_State* state);

@@ -106,6 +106,17 @@ end
 ```
 ### callback functions
 callback functions needs a `request_id`
+#### weblua.render()
+store in dynamic memory a text file render (see example) \
+activate dynamic memory
+> :warning: **only for 2Mo can be sent to the internet browser** 
+```lua
+weblua.render(request_id, "status.html", {name="IniKiwi", status="busy"})
+-- input (status.html)
+-- <h1>{{name}} is {{status}} {{unused}}</h1>
+-- output (internet browser view)
+-- <h1>IniKiwi is busy</h1>
+```
 #### weblua.log()
 print string to the server console
 ```lua

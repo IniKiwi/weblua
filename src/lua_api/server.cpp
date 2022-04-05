@@ -109,3 +109,38 @@ int l_http_redirect(lua_State* state){
     }
     return 0;
 }
+
+int l_render(lua_State* state){
+    int args = lua_gettop(state);
+    if(args == 3){
+        request::get(lua_tointeger(state,1))->load_file(lua_tostring(state,2));
+        request::get(lua_tointeger(state,1))->set_use_static_file(false);
+        std::string rec = request::get(lua_tointeger(state,1))->get_data();
+        size_t i1 = 0;
+        size_t i2 = 0;
+        size_t last = 0;
+        std::string key;
+        while(1){
+            i1 = rec.find("{{",last);
+            if(i1==std::string::npos){
+                break;
+            }
+            i2 = rec.find("}}",i1);
+            key = rec.substr(i1+2, i2-2-i1);
+            last = i1+2;
+
+            lua_pushstring(state,key.c_str());
+            lua_gettable(state, 3);
+            if(lua_type(state,-1) == LUA_TSTRING){
+                rec.replace(i1,i2-i1+2,luaL_checkstring(state,-1));
+            }
+            else{
+                rec.replace(i1,i2-i1+2,"");
+            }
+
+        }
+        request::get(lua_tointeger(state,1))->set_data(rec);
+
+    }
+    return 0;
+}

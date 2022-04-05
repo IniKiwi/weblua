@@ -48,6 +48,7 @@ class request{
     void log(std::string str);
 
     void set_data(std::string _data);
+    int load_file(std::string _file);
     void set_mimetype(std::string _mimetype);
     void set_status(std::string _status);
     void set_static_file(std::string _file);
