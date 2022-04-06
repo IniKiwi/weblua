@@ -91,13 +91,13 @@ storage.set("key", 750)
 get a value with a unique key \
 returns 2 values:
 1. the data 
-2. the data type `STORAGE_STRING` or `STORAGE_NUMBER`
+2. the data type `STRING` or `NUMBER`
 ```lua
 local data, data_type = storage.get("key")
 if data ~= nil then
-    if data_type == STORAGE_STRING then
+    if data_type == STRING then
         --data is a string
-    else if data_type == STORAGE_NUMBER then
+    else if data_type == NUMBER then
         --data is a number
     end
 else

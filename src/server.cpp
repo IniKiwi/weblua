@@ -106,9 +106,9 @@ int server::init_lua(std::string path){
     register_c_function(server::server_lua_state,"storage","set",l_set);
     register_c_function(server::server_lua_state,"storage","get",l_get);
     lua_pushnumber(server::server_lua_state, SQLITE_TEXT);
-    lua_setglobal(server::server_lua_state, "STORAGE_STRING");
+    lua_setglobal(server::server_lua_state, "STRING");
     lua_pushnumber(server::server_lua_state, SQLITE_FLOAT);
-    lua_setglobal(server::server_lua_state, "STORAGE_NUMBER");
+    lua_setglobal(server::server_lua_state, "NUMBER");
     int restlt2 = luaL_loadfile(server::server_lua_state, path.c_str());
     if(restlt2 != LUA_OK){
         std::cout << "lua loadfile error:\n";
