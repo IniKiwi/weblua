@@ -1,5 +1,6 @@
 #include <sqlite3.h>
 #include <string>
+#include <luajit-2.1/lua.hpp>
 #pragma once
 
 typedef struct{
@@ -20,5 +21,10 @@ class sql{
     static void close();
     static int set(sql_storage_t value);
     static sql_storage_t get(std::string key);
+    static int l_create_table(lua_State* state);
+    static int l_insert(lua_State* state);
+    static int l_get(lua_State* state);
+    static int l_update(lua_State* state);
+    static int l_delete(lua_State* state);
     
 };

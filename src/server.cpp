@@ -105,6 +105,11 @@ int server::init_lua(std::string path){
     register_c_function(server::server_lua_state,"weblua","render",l_render);
     register_c_function(server::server_lua_state,"storage","set",l_set);
     register_c_function(server::server_lua_state,"storage","get",l_get);
+    register_c_function(server::server_lua_state,"sql","create_table",sql::l_create_table);
+    register_c_function(server::server_lua_state,"sql","insert",sql::l_insert);
+    register_c_function(server::server_lua_state,"sql","get",sql::l_get);
+    register_c_function(server::server_lua_state,"sql","update",sql::l_update);
+    register_c_function(server::server_lua_state,"sql","delete",sql::l_delete);
     lua_pushnumber(server::server_lua_state, SQLITE_TEXT);
     lua_setglobal(server::server_lua_state, "STRING");
     lua_pushnumber(server::server_lua_state, SQLITE_FLOAT);
