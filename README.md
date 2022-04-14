@@ -30,6 +30,52 @@ weblua.add("/path/","file", callback_function)
 weblua.add("/path/", callback_function)
 ```
 
+### sql api
+the sql module include all basic functions
+#### sql.create_table()
+create a table **if not exists** \
+the type can be `STRING` or `NUMBER`
+> :warning: the id is created automatically
+```lua
+sql.create_table("table_name",{"a_string",STRING, "random_number",NUMBER})
+```
+#### sql.insert()
+insert a row in sql table
+1. table name 
+2. row data (table)
+```lua
+sql.insert("table_name",{a_string="0_0",random_number=99999})
+```
+#### sql.update()
+update a row
+1. table name
+2. where (table)
+3. new values (table)
+```lua
+--before: [id:1, a_string:"0_0",random_number: 99999 ]
+sql.insert("table_name",{random_number=99999}, {a_string="I like the number 99999!"})
+--after: [id:1, a_string:"I like the number 99999!",random_number: 99999 ]
+```
+#### sql.get()
+return a table of rows
+1. table name 
+2. where (table)
+```lua
+local results = sql.get("table_name", {random_number=99999})
+print(#results.." results") --prints number of results: 1 results
+if #results > 0 then
+    print("number 1: "..results[1].random_number) --prints first result number
+    print("string 1: "..results[1].a_string) --prints first result string
+end
+```
+#### sql.delete()
+delete  rows
+1. table name
+2. where (table)
+```lua
+sql.delete("table_name", {random_number=99999})
+```
+
 ### storage functions
 the storage module use sqlite to store values
 #### storage.set()
