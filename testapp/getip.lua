@@ -11,4 +11,4 @@ local function get_ip(request_id)
 end
 
 --register page
-weblua.add("/get_ip",get_ip)
+weblua.add("/",get_ip)
