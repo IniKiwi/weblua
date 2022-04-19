@@ -232,20 +232,24 @@ void request::log(std::string str){
     if(type == "POST"){
         size_t form_start = client_request.find("\r\n\r\n");
         std::string form_data = client_request.substr(form_start+4,std::stoi(get_http_arg("Content-Length").c_str()));
-
+        std::cout << std::stoi(get_http_arg("Content-Length").c_str()) << "\n";
         size_t feild_name_start = client_request.find(_field,form_start+4);
         if(feild_name_start == std::string::npos){
             return "";
         }
         size_t feild_data_start = client_request.find_first_of("=",feild_name_start);
+        if(feild_data_start == std::string::npos){
+            return "";
+        }
         feild_data_start++;
 
         size_t feild_data_end = client_request.find_first_of("&",feild_name_start);
-        if(feild_name_start == std::string::npos){
-            return client_request.substr(feild_data_start, client_request.length()-feild_data_start);
-        }
 
-        std::string tdata = client_request.substr(feild_data_start, feild_data_end-feild_data_start);
+        std::string tdata; 
+        if(feild_data_end == std::string::npos){
+            feild_data_end = form_start+4+std::stoi(get_http_arg("Content-Length").c_str());
+        }
+        tdata = client_request.substr(feild_data_start, feild_data_end-feild_data_start);
         replace_all(tdata,"%0D%0A","\n");
         replace_all(tdata,"%0D","\n");
         replace_all(tdata,"%0A","\n");
