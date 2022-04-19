@@ -271,7 +271,6 @@ int sql::l_update(lua_State* state){
         }
         sqlcom = sqlcom.substr(0, sqlcom.size()-5);
         sqlcom += ";";
-        std::cout << sqlcom << "\n";
         sqlite3_exec(sql::DB,sqlcom.c_str(),NULL,0,NULL);
     }
     return 0;
@@ -302,7 +301,6 @@ int sql::l_delete(lua_State* state){
         }
         sqlcom = sqlcom.substr(0, sqlcom.size()-5);
         sqlcom += ";";
-        std::cout << sqlcom << "\n";
         sqlite3_exec(sql::DB,sqlcom.c_str(),NULL,0,NULL);
     }
 }

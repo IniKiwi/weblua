@@ -232,7 +232,6 @@ void request::log(std::string str){
     if(type == "POST"){
         size_t form_start = client_request.find("\r\n\r\n");
         std::string form_data = client_request.substr(form_start+4,std::stoi(get_http_arg("Content-Length").c_str()));
-        std::cout << std::stoi(get_http_arg("Content-Length").c_str()) << "\n";
         size_t feild_name_start = client_request.find(_field,form_start+4);
         if(feild_name_start == std::string::npos){
             return "";
