@@ -303,4 +303,5 @@ int sql::l_delete(lua_State* state){
         sqlcom += ";";
         sqlite3_exec(sql::DB,sqlcom.c_str(),NULL,0,NULL);
     }
+    return 0;
 }

@@ -82,6 +82,7 @@ void request::send(){
         tfile.seekg(0, std::ios::beg);
 
         if(file_size > WEBLUA_MAX_FILE_SIZE){
+            tfile.close();
             return;
         }
 

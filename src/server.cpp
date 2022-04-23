@@ -14,6 +14,8 @@
 #include <sql.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <cerrno>
+#include <cstring>
 
 lua_State* server::server_lua_state;
 sockaddr_in server::server_addr;
@@ -30,8 +32,9 @@ int server::init(unsigned short port, std::string path){
     sql::init();
 
     server::server_sock = socket(AF_INET, SOCK_STREAM, 0);
-    if(bind(server::server_sock,(struct sockaddr *)&server::server_addr,sizeof(server::server_addr)) < 0) { 
-        std::cerr << "bind failed!\nthe port "<<port<<" is free?\n";
+    int _err = bind(server::server_sock,(struct sockaddr *)&server::server_addr,sizeof(server::server_addr));
+    if(_err < 0) { 
+        std::cerr << "\r\e[31merror starting weblua (network)\r\n\e[90m" << std::strerror(errno) << "\n";
         exit(EXIT_FAILURE); 
     }
 
@@ -79,9 +82,17 @@ int server::main_loop(){
     client_t client_tmp;
     while(server::running){
         if((client_tmp.sock = accept(server::server_sock, (sockaddr*)&client_tmp.addr, (socklen_t*)&client_tmp.len))<0){
-            std::cerr << "accept failed!\n";
+            std::cerr << "\r\e[31merror while running weblua (network)\r\n\e[90m" << std::strerror(errno) << "\n";
         } else {
-            new std::thread(&server::run_request,client_tmp);
+            try{
+                std::thread* t = new std::thread(&server::run_request,client_tmp);
+                t->detach();
+                
+            }
+            catch(const std::exception& e){
+                std::cerr << "\r\e[31merror while running weblua (request)\r\n\e[90m" << e.what() << "\n";
+                continue;
+            }
         }
         
     }
@@ -116,21 +127,20 @@ int server::init_lua(std::string path){
     lua_setglobal(server::server_lua_state, "NUMBER");
     int restlt2 = luaL_loadfile(server::server_lua_state, path.c_str());
     if(restlt2 != LUA_OK){
-        std::cout << "lua loadfile error:\n";
-
+        std::cout << "\r\e[31merror starting weblua (lua)\r\n\e[90mfile not found\n";
+        exit(1);
+        return 1;
     }
-    std::cout << "lua register ended\n";
 
     int result = lua_pcall(server::server_lua_state, 0, LUA_MULTRET, 0);
 
     if(result != LUA_OK) {
         const char* message = lua_tostring(server::server_lua_state, -1);
-        std::cout << "error at pcall:\n";
-        puts(message);
+        std::cout << "\r\e[31merror starting weblua (lua)\r\n\e[90m"<< message << "\n";
         lua_pop(server::server_lua_state, 1);
+        exit(1);
         return 1;
     }
-    std::cout << "lua script   ended\n";
     return 0;
 }
 
