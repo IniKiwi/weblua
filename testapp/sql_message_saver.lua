@@ -1,6 +1,9 @@
 --sql initialisation
 sql.create_table("users",{"name",STRING, "message",STRING })
 
+--show weblua version
+print("weblua version: "..WEBLUA_VERSION_STR)
+
 --pages functions
 local function main_page(request_id)
     if weblua.isPOST(request_id) then

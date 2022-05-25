@@ -17,12 +17,18 @@
 #include <cerrno>
 #include <cstring>
 
+#define WEBLUA_VERSION_STR "0.1.0.1"
+#define WEBLUA_VERSION 10001
+
+
 lua_State* server::server_lua_state;
 sockaddr_in server::server_addr;
 int server::server_sock;
 char server::running;
 
 int server::init(unsigned short port, std::string path){
+    std::cout << "\e[34m              _     _             \n__      _____| |__ | |_   _  __ _ \n\\ \\ /\\ / / _ \\ '_ \\| | | | |/ _` |\n \\ V  V /  __/ |_) | | |_| | (_| |\n  \\_/\\_/ \\___|_.__/|_|\\__,_|\\__,_| \e[32m(c) 2022 IniKiwi\n"
+    << "\e[33m v" <<WEBLUA_VERSION_STR << "\n\e[39m\n";
     signal(SIGPIPE, SIG_IGN);
     server::running = 1;
     server::server_addr.sin_family = AF_INET; 
@@ -125,6 +131,10 @@ int server::init_lua(std::string path){
     lua_setglobal(server::server_lua_state, "STRING");
     lua_pushnumber(server::server_lua_state, SQLITE_FLOAT);
     lua_setglobal(server::server_lua_state, "NUMBER");
+    lua_pushnumber(server::server_lua_state, WEBLUA_VERSION);
+    lua_setglobal(server::server_lua_state, "WEBLUA_VERSION");
+    lua_pushstring(server::server_lua_state, WEBLUA_VERSION_STR);
+    lua_setglobal(server::server_lua_state, "WEBLUA_VERSION_STR");
     int restlt2 = luaL_loadfile(server::server_lua_state, path.c_str());
     if(restlt2 != LUA_OK){
         const char* message = lua_tostring(server::server_lua_state, -1);

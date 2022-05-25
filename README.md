@@ -22,6 +22,13 @@ sudo weblua [lua script]
 use `ctrl + c` to stop the program \
 `sudo` is needed to run the program (port 80)
 ## the weblua lua api
+### global variables
+| name | content |
+| -- | -- |
+| `WEBLUA_VERSION` | weblua version number |
+| `WEBLUA_VERSION_STR` | weblua version string |
+| `STRING` | string type (for sql api) |
+| `NUMBER` | number type (for sql api) |
 ### functions
 #### weblua.add()
 ```lua
