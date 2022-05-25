@@ -127,7 +127,8 @@ int server::init_lua(std::string path){
     lua_setglobal(server::server_lua_state, "NUMBER");
     int restlt2 = luaL_loadfile(server::server_lua_state, path.c_str());
     if(restlt2 != LUA_OK){
-        std::cout << "\r\e[31merror starting weblua (lua)\r\n\e[90mfile not found\n";
+        const char* message = lua_tostring(server::server_lua_state, -1);
+        std::cout << "\r\e[31merror starting weblua (lua)\r\n\e[90m" << message << "\n";
         exit(1);
         return 1;
     }
@@ -146,4 +147,8 @@ int server::init_lua(std::string path){
 
 int server::run_lua(){
     return 0;
+}
+
+void server::show_error(std::string error, std::string reason){
+    std::cerr << "\r\e[31merror while running weblua ("+error+")\n" << reason << "\n";
 }

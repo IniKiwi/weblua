@@ -37,6 +37,7 @@ class server{
     static int main_loop();
     static void server_cli();
     static void log(std::string _log);
+    static void show_error(std::string error, std::string reason);
 
     static int add_route(const char* _path, const char* _file);
 };

@@ -9,7 +9,7 @@ int l_add(lua_State* state){
     if(args == 2 && lua_type(state, 1) == LUA_TSTRING && lua_type(state, 2) == LUA_TSTRING){ //weblua.add(path,file)
         route* a = new route(route_type::PATH,lua_tostring(state, 1));
         a->set_file(lua_tostring(state, 2));
-        std::cout << "new url: " << lua_tostring(state, 1) << " " << lua_tostring(state, 2) << "\n";
+        std::cout << "\e[93m" << lua_tostring(state, 1) << "\e[39m added (file)\n";
     } 
     else if(args == 3 && lua_type(state, 1) == LUA_TSTRING  //weblua.add(path,file, callback)
     && lua_type(state, 2) == LUA_TSTRING 
@@ -17,11 +17,11 @@ int l_add(lua_State* state){
         route* a = new route(route_type::PATH_CALLBACK,lua_tostring(state, 1));
         a->set_file(lua_tostring(state, 2));
         a->set_lua_callback(luaL_ref(state, LUA_REGISTRYINDEX));
-        std::cout << "new callback url: " << lua_tostring(state, 1) << " " << lua_tostring(state, 2) << "\n";
+        std::cout << "\e[93m" << lua_tostring(state, 1) << "\e[39m added (callback)\n";
     } else if(args == 2 && lua_type(state, 1) == LUA_TSTRING && lua_type(state, 2) == LUA_TFUNCTION){
         route* a = new route(route_type::CUSTOM,lua_tostring(state, 1));
         a->set_lua_callback(luaL_ref(state, LUA_REGISTRYINDEX));
-        std::cout << "new custom url: " << lua_tostring(state, 1) << "\n";
+        std::cout << "\e[93m" << lua_tostring(state, 1) << "\e[39m added (lua function)\n";
     }
     return 0;
 }
