@@ -27,8 +27,8 @@ int server::server_sock;
 char server::running;
 
 int server::init(unsigned short port, std::string path){
-    std::cout << "\e[34m              _     _             \n__      _____| |__ | |_   _  __ _ \n\\ \\ /\\ / / _ \\ '_ \\| | | | |/ _` |\n \\ V  V /  __/ |_) | | |_| | (_| |\n  \\_/\\_/ \\___|_.__/|_|\\__,_|\\__,_| \e[32m(c) 2022 IniKiwi\n"
-    << "\e[33m v" <<WEBLUA_VERSION_STR << "\n\e[39m\n";
+    std::cout << "\e[34m\e[1m              _     _             \n__      _____| |__ | |_   _  __ _ \n\\ \\ /\\ / / _ \\ '_ \\| | | | |/ _` |\n \\ V  V /  __/ |_) | | |_| | (_| |\n  \\_/\\_/ \\___|_.__/|_|\\__,_|\\__,_| \e[32m(c) 2022 IniKiwi\n"
+    << "\e[33m v" <<WEBLUA_VERSION_STR << "\n\e[39m\e[0m\n";
     signal(SIGPIPE, SIG_IGN);
     server::running = 1;
     server::server_addr.sin_family = AF_INET; 
