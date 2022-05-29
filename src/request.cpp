@@ -36,6 +36,7 @@ request::request(lua_State* state, client_t _client){
         std::back_inserter( words )
     );
     path = words[1];
+    path = percent_format(path);
     type = words[0];
     if(route::exists(path) == true){
         route_type type = route::get(path)->get_type();

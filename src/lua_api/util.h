@@ -13,3 +13,5 @@ void replace_all(
 );
 
 void lshow_error(lua_State* state, std::string reason);
+
+std::string percent_format(std::string input);

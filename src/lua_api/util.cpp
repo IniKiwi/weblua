@@ -55,3 +55,51 @@ void lshow_error(lua_State* state, std::string reason){
 	server::show_error("lua",message);
 
 }
+
+std::string percent_format(std::string input){
+	std::string tdata = input;
+	replace_all(tdata,"%0D%0A","\n");
+	replace_all(tdata,"%0D","\n");
+	replace_all(tdata,"%0A","\n");
+	replace_all(tdata,"+"," ");
+	replace_all(tdata,"%20"," ");
+	replace_all(tdata,"%22","\"");
+	replace_all(tdata,"%2B","+");
+	replace_all(tdata,"%21","!");
+	replace_all(tdata,"%23","#");
+	replace_all(tdata,"%24","$");
+	replace_all(tdata,"%26","&");
+	replace_all(tdata,"%27","'");
+	replace_all(tdata,"%28","(");
+	replace_all(tdata,"%29",")");
+	replace_all(tdata,"%2A","*");
+	replace_all(tdata,"%2C",",");
+	replace_all(tdata,"%2F","/");
+	replace_all(tdata,"%3A",":");
+	replace_all(tdata,"%3B",";");
+	replace_all(tdata,"%3D","=");
+	replace_all(tdata,"%3F","?");
+	replace_all(tdata,"%40","@");
+	replace_all(tdata,"%5B","[");
+	replace_all(tdata,"%5D","]");
+	replace_all(tdata,"%20"," ");
+	replace_all(tdata,"%2D","-");
+	replace_all(tdata,"%2E",".");
+	replace_all(tdata,"%3C","<");
+	replace_all(tdata,"%3E",">");
+	replace_all(tdata,"%5C","\\");
+	replace_all(tdata,"%5E","^");
+	replace_all(tdata,"%5F","_");
+	replace_all(tdata,"%60","`");
+	replace_all(tdata,"%7B","{");
+	replace_all(tdata,"%7C","|");
+	replace_all(tdata,"%7D","}");
+	replace_all(tdata,"%7E","~");
+	replace_all(tdata,"%E9","é");
+	replace_all(tdata,"%E8","è");
+	replace_all(tdata,"%E7","ç");
+	replace_all(tdata,"%E0","à");
+
+	replace_all(tdata,"%25","%");
+	return tdata;
+}

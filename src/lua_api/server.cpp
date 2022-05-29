@@ -3,13 +3,38 @@
 #include <string>
 #include <iostream>
 #include <request.h>
+#include <filesystem>
+
+void add_folder(std::string path, std::string folder){
+    for (const auto & entry : std::filesystem::directory_iterator(folder)){
+        if(std::filesystem::is_directory(entry)){
+            try{
+                add_folder(path+std::string(entry.path().filename())+"/", std::string(entry.path()));
+            }
+            catch(const std::exception& e){
+                std::cerr << e.what() << '\n';
+            }
+        } else {
+            route* a = new route(route_type::PATH, path + std::string(entry.path().filename()));
+            a->set_file(std::string(entry.path()));
+            //std::cout << path + std::string(entry.path().filename()) << "\n";
+            //std::cout << std::string(entry.path()) << "\n";
+            std::cout << "  \e[93m" << path << std::string(entry.path().filename()) << "\e[39m added (file)\n";
+        }
+    }
+}
 
 int l_add(lua_State* state){
     int args = lua_gettop(state);
     if(args == 2 && lua_type(state, 1) == LUA_TSTRING && lua_type(state, 2) == LUA_TSTRING){ //weblua.add(path,file)
-        route* a = new route(route_type::PATH,lua_tostring(state, 1));
-        a->set_file(lua_tostring(state, 2));
-        std::cout << "\e[93m" << lua_tostring(state, 1) << "\e[39m added (file)\n";
+        if(std::filesystem::is_directory(lua_tostring(state, 2))){
+            std::cout << "\e[93m" << lua_tostring(state, 1) << "\e[39m added (folder)\n";
+            add_folder(lua_tostring(state, 1),lua_tostring(state, 2));
+        } else {
+            route* a = new route(route_type::PATH,lua_tostring(state, 1));
+            a->set_file(lua_tostring(state, 2));
+            std::cout << "\e[93m" << lua_tostring(state, 1) << "\e[39m added (file)\n";
+        } 
     } 
     else if(args == 3 && lua_type(state, 1) == LUA_TSTRING  //weblua.add(path,file, callback)
     && lua_type(state, 2) == LUA_TSTRING 
