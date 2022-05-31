@@ -108,68 +108,68 @@ else
     --NULL
 end
 ```
-### callback functions
+### request functions
 callback functions needs a `request_id`
-#### weblua.render()
+#### request.render()
 store in dynamic memory a text file render (see example) \
 activate dynamic memory
 > :warning: **only for 2Mo can be sent to the internet browser** 
 ```lua
-weblua.render(request_id, "status.html", {name="IniKiwi", status="busy"})
+request.render(request_id, "status.html", {name="IniKiwi", status="busy"})
 -- input (status.html)
 -- <h1>{{name}} is {{status}} {{unused}}</h1>
 -- output (internet browser view)
 -- <h1>IniKiwi is busy</h1>
 ```
-#### weblua.log()
+#### request.log()
 print string to the server console
 ```lua
-weblua.log(request_id, "new request!")
+request.log(request_id, "new request!")
 ```
-#### weblua.get_ip() 
+#### request.get_ip() 
 returns client ip as a string
 ```lua
-local ip = weblua.get_ip(request_id)
+local ip = request.get_ip(request_id)
 ```
-#### weblua.set_mimetype()
+#### request.set_mimetype()
 set the http response mimetype
 ```lua
-weblua.set_mimetype(request_id, "text/html")
+request.set_mimetype(request_id, "text/html")
 ``` 
-#### weblua.set_status()
+#### request.set_status()
 set the http response status
 ```lua
-weblua.set_status(request_id, "404 Not Found")
+request.set_status(request_id, "404 Not Found")
 ```
-#### weblua.set_data()
+#### request.set_data()
 set the http response data
 ```lua
-weblua.set_data(request_id,"<h1>hello!</h1>")
+request.set_data(request_id,"<h1>hello!</h1>")
 ```
 
-#### weblua.load_file()
+#### request.load_file()
 save file name in variable\
 the file will be sent at the end of request with chunked transfer
 ```lua
-weblua.load_file(request_id,"schoolfiles.zip") 
+request.load_file(request_id,"schoolfiles.zip") 
 ``` 
-#### weblua.isPOST()
+#### request.isPOST()
 returns true if the request is a POST
 ```lua
-if weblua.isPOST(request_id) then
+if request.isPOST(request_id) then
     --code
 end
 ```
-#### weblua.get_form_feild()
+#### request.get_form_feild()
 returns the form feild data
-> :warning: **only for POST requests** use `weblua.isPOST()` to check
+> :warning: **only for POST requests** use `request.isPOST()` to check
 ```lua
-local value = weblua.get_form_feild(request_id, "feild_name")
+local value = request.get_form_feild(request_id, "feild_name")
 ```
 
-#### weblua.http_redirect()
+#### request.http_redirect()
 returns 301 Moved Permanently to the navigator
 > :warning: **no other content can be sent to the internet browser** but the callback will continue its execution until the end
 ```lua
-weblua.http_redirect(request_id, "/")
+request.http_redirect(request_id, "/")
 ```

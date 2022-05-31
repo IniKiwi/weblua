@@ -27,7 +27,8 @@ int server::server_sock;
 char server::running;
 
 int server::init(unsigned short port, std::string path){
-    std::cout << "\e[34m\e[1m              _     _             \n__      _____| |__ | |_   _  __ _ \n\\ \\ /\\ / / _ \\ '_ \\| | | | |/ _` |\n \\ V  V /  __/ |_) | | |_| | (_| |\n  \\_/\\_/ \\___|_.__/|_|\\__,_|\\__,_| \e[32m(c) 2022 IniKiwi\n"
+    //std::cout << "\e[34m\e[1m              _     _             \n__      _____| |__ | |_   _  __ _ \n\\ \\ /\\ / / _ \\ '_ \\| | | | |/ _` |\n \\ V  V /  __/ |_) | | |_| | (_| |\n  \\_/\\_/ \\___|_.__/|_|\\__,_|\\__,_| \e[32m(c) 2022 IniKiwi\n"
+    std::cout << "\e[34m\e[1m              _     _             \n__      _____| |__ | |_   _  __ _ \n\\ \\ /\\ / / _ \\ '_ \\| | | | |/ _` |\n \\ V  V /  __/ |_) | | |_| | (_| |\n  \\_/\\_/ \\___|_.__/|_|\\__,_|\\__,_| \n"
     << "\e[33m v" <<WEBLUA_VERSION_STR << "\n\e[39m\e[0m\n";
     signal(SIGPIPE, SIG_IGN);
     server::running = 1;
@@ -110,16 +111,16 @@ int server::init_lua(std::string path){
     server::server_lua_state = luaL_newstate();
     luaL_openlibs(server::server_lua_state);
     register_c_function(server::server_lua_state,"weblua","add",l_add);
-    register_c_function(server::server_lua_state,"weblua","log",l_log);
-    register_c_function(server::server_lua_state,"weblua","get_ip",l_get_ip);
-    register_c_function(server::server_lua_state,"weblua","set_mimetype",l_set_mimetype);
-    register_c_function(server::server_lua_state,"weblua","set_status",l_set_status);
-    register_c_function(server::server_lua_state,"weblua","set_data",l_set_data);
-    register_c_function(server::server_lua_state,"weblua","load_file",l_load_file);
-    register_c_function(server::server_lua_state,"weblua","isPOST",l_isPOST);
-    register_c_function(server::server_lua_state,"weblua","get_form_feild",l_get_form_feild);
-    register_c_function(server::server_lua_state,"weblua","http_redirect",l_http_redirect);
-    register_c_function(server::server_lua_state,"weblua","render",l_render);
+    register_c_function(server::server_lua_state,"request","log",l_log);
+    register_c_function(server::server_lua_state,"request","get_ip",l_get_ip);
+    register_c_function(server::server_lua_state,"request","set_mimetype",l_set_mimetype);
+    register_c_function(server::server_lua_state,"request","set_status",l_set_status);
+    register_c_function(server::server_lua_state,"request","set_data",l_set_data);
+    register_c_function(server::server_lua_state,"request","load_file",l_load_file);
+    register_c_function(server::server_lua_state,"request","isPOST",l_isPOST);
+    register_c_function(server::server_lua_state,"request","get_form_feild",l_get_form_feild);
+    register_c_function(server::server_lua_state,"request","http_redirect",l_http_redirect);
+    register_c_function(server::server_lua_state,"request","render",l_render);
     register_c_function(server::server_lua_state,"storage","set",l_set);
     register_c_function(server::server_lua_state,"storage","get",l_get);
     register_c_function(server::server_lua_state,"sql","create_table",sql::l_create_table);
